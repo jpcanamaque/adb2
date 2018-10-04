@@ -1,0 +1,46 @@
+/*top-section*/
+.top-section{
+	padding-top: 40px;
+	padding-bottom: 30px;
+}
+
+/*main-area*/
+.bg-light{
+    background-color: #f8f9fa!important;
+}
+
+/*input-section*/
+.input-section{
+	padding-top: 30px;
+	padding-bottom: 30px;
+}
+.text-inst{
+	padding-bottom: 1px;
+}
+
+/*result-section*/
+.result-section{
+	padding-top: 20px;
+	padding-bottom: 30px;
+}
+
+#result-txt{
+    overflow-y: scroll;
+    /*height: 100px;*/
+    resize: none; 
+}
+
+.table-responsive {
+    max-height:300px;
+}
+
+
+/*footer*/
+footer {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.text-muted {
+    color: #6c757d!important;
+}
