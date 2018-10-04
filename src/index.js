@@ -141,7 +141,8 @@ class Root extends React.Component {
         
     render () {
         return (
-            <div>                
+            <div>           
+				Sample only
                 <section className="top-section text-center">
                     <div className="container">
                         <h2>DBMS</h2>        
