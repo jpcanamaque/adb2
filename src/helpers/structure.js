@@ -45,7 +45,7 @@ export function StructureConstants () {
     }
 }
 
-export function validateTableStucture(tblName, columns) {
+export function validateTableStucture(tblName, columns, whereClause) {
     let tblStruct = StructureConstants();
     let ucaseTblname = tblName.toUpperCase();
     let isTableExists = typeof tblStruct[ucaseTblname] !== 'undefined' ? true : false;
@@ -58,17 +58,51 @@ export function validateTableStucture(tblName, columns) {
             if(col == "*") {
                 starCntr++;
             } 
-            
             if (starCntr > 1){
                 response = "Multiple wildcard select error";
             }
-            
             if(!tblUsed.hasOwnProperty(col.toUpperCase())) {
                 response =  "Column " + col + " not existing in table " + tblName;
             }
         });
+        if(whereClause.length > 0) {   
+            whereClause.forEach(c => {
+                if(typeof c.operation !== 'undefined' || c.values > 0) {
+                    c.values.forEach(cc => {
+                        if(!tblUsed.hasOwnProperty(cc.col.toUpperCase())) {
+                            response =  "Column " + cc.col + " in WHERE clause not existing in table " + tblName;
+                        }
+                        return false;
+                    });
+                } else {
+                    if(!tblUsed.hasOwnProperty(c.col.toUpperCase())) {
+                        response =  "Column " + c.col + " in WHERE clause not existing in table " + tblName;
+                    }
+                }
+            });
+        }
+
         return response;
     } else {
         return "Table " + tblName + " is undefined";
     }
 } 
+
+export function evaluateOper(operation, left, right) {
+    switch(operation.toLowerCase()) {
+        case '<':
+            return left < right;
+        case '>':
+            return left > right;
+        case '<=':
+            return left <= right;
+        case '>=':
+            return left >= right;
+        case '=':
+            return left == right;
+        case 'and':
+            return left && right;
+        case 'or':
+            return left || right;
+    }
+}

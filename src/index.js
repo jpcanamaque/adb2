@@ -7,7 +7,7 @@ import './css/bootstrap.min.css';
 import './css/custom.css';
 
 
-import { StructureConstants, validateTableStucture, readfile } from './helpers/structure';
+import { StructureConstants, validateTableStucture, readfile, evaluateOper } from './helpers/structure';
 
 class Root extends React.Component {        
     constructor() {
@@ -23,6 +23,8 @@ class Root extends React.Component {
 
     executeQuery(e) {
         e.preventDefault();
+        let coverSpin = document.getElementById('cover-spin');
+        coverSpin.style.display = "block";
         const sqlstring = this.sql_string.value;
         const arr_sqlstring = sqlstring.split(';');
         if(arr_sqlstring.length > 1 && arr_sqlstring[arr_sqlstring.length - 1] !== "" ) {
@@ -50,32 +52,77 @@ class Root extends React.Component {
 
     validateQuery(sql_token) {
         let statement = sql_token.statement[0];
-        let tblName, columns, isQueryValid;
+        let tblName, columns, isQueryValid, whereClause = [];
         switch(statement.variant.toUpperCase()) {
             case "SELECT":
                 tblName = statement.from.name;
                 columns = statement.result.map(function(d,i) {
                     return d.name;
                 });
+                if(typeof statement.where !== 'undefined') {
+                    whereClause = statement.where.map(function(d,i) {
+                        if(['and', 'or', '<', '>', '=', '<=', '>='].indexOf(d.operation) >= 0) {
+                            let leftCond = d.left;
+                            let rightCond = d.right;
+                            
+                            if((['and', 'or'].indexOf(leftCond.operation) === -1 || ['and', 'or'].indexOf(rightCond.operation) === -1)
+                            && (typeof leftCond.operation !== 'undefined' && typeof rightCond.operation !== 'undefined')
+                            ) {
+                                if(['and', 'or'].indexOf(leftCond.operation) > -1 || ['and', 'or'].indexOf(rightCond.operation) > -1) {
+                                    isQueryValid = "Only TWO conditions are supported in this version";
+                                    return [];
+                                } else {
+                                    let firstFilterTarget = leftCond.left.name;
+                                    let firstFilterOper = leftCond.operation;
+                                    let firstFilterValue = leftCond.right.value || leftCond.right.name;
+        
+                                    let secondFilterTarget = rightCond.left.name;
+                                    let secondFilterOper = rightCond.operation;
+                                    let secondFilterValue = rightCond.right.value ||  rightCond.right.name;
+                                    
+                                    return { operation : d.operation, values : [
+                                       {          
+                                            'col' : firstFilterTarget,
+                                            'oper' : firstFilterOper,
+                                            'val' : firstFilterValue
+                                        }, {
+                                            'col' : secondFilterTarget,
+                                            'oper' : secondFilterOper,
+                                            'val' : secondFilterValue
+                                        }
+                                    ]};
+                                }
 
-                  // let whereClause = statement.where.map(function(d,i) {
-                //     return d.left;
-                // })
+                            } else if (leftCond.type !== 'expression' && rightCond.type !== 'expression') {
+                                let firstFilterTarget = leftCond.name;
+                                let firstFilterOper = d.operation;
+                                let firstFilterValue = rightCond.value;
+    
+                                return {
+                                    'col' : firstFilterTarget,
+                                    'oper' : firstFilterOper,
+                                    'val' : firstFilterValue
+                                };
+                            } else {
+                                isQueryValid = "Only TWO conditions are supported in this version";
+                            }                      
+                        } else {
+                            isQueryValid = 'SELECT error: Only AND, OR or basic comparison operators are supported in this version';
+                        }
+                    });
+                }
 
-                isQueryValid = validateTableStucture(tblName, columns);
+                if(isQueryValid === '' || typeof isQueryValid === 'undefined') {
+                    isQueryValid = validateTableStucture(tblName, columns, whereClause);
+                } 
+
                 if(isQueryValid !== '') {
                     console.error('SELECT error: ' + isQueryValid);
                 } else {
-                    // let filename = tblName.toLowerCase() + ".json";
-                    // let path = "/src/struct/" + filename;
-                    // this.readfile(path, columns, function(rows) {
-                    //     console.log(rows);
-                    // });
                     $("#rs-colheader").html('');
                     $("#rs-datarow").html('');
-                    this.selectData(tblName, columns);
+                    this.selectData(tblName, columns, whereClause);
                 }
-
                 break;
 
             case "INSERT":
@@ -107,22 +154,35 @@ class Root extends React.Component {
         }
     }
 
-    selectData (tblName, columns) {
+    selectData (tblName, columns, whereClause) {
         let filename = tblName.toLowerCase() + ".json";
         let path = "/src/struct/" + filename;
         let thead_content = "<tr>";
         let tbody_content = "<tr>";
         let cols = '';
+        
         $.getJSON(path, function(data) {
             if(columns.includes("*")) {
                 cols = Object.keys(StructureConstants()[tblName.toUpperCase()]).filter(col => { return col !== "*"; });
             } else {
                 cols = columns;
             }
-
             cols.forEach(function(d,i) {
                 thead_content += "<th>" + d + "</th>";
             });
+            
+            if(whereClause.length > 0) {
+                data  = data.filter(function(r){
+                    if(typeof whereClause[0].operation !== 'undefined') {                    
+                        let firstEval = evaluateOper(whereClause[0].values[0].oper, r[whereClause[0].values[0].col],  whereClause[0].values[0].val);
+                        let secondEval = evaluateOper(whereClause[0].values[1].oper, r[whereClause[0].values[1].col],  whereClause[0].values[1].val);
+                        return evaluateOper(whereClause[0].operation, firstEval, secondEval);
+                    } else {
+                        return evaluateOper(whereClause[0].oper, r[whereClause[0].col],  whereClause[0].val); 
+                    }
+                });
+            }
+
             data.forEach(function(d,i) {
                 cols.forEach(function(e,f) {
                     tbody_content += "<td>" + d[e.toLowerCase()] + "</td>";
@@ -132,6 +192,8 @@ class Root extends React.Component {
             thead_content += "</tr>";
             $("#rs-colheader").html(thead_content);
             $("#rs-datarow").html(tbody_content);
+            let coverSpin = document.getElementById('cover-spin');
+            coverSpin.style.display = "none";
         });
     }
 
@@ -141,126 +203,44 @@ class Root extends React.Component {
         
     render () {
         return (
-            <div>           
-                <section className="top-section text-center">
-                    <div className="container">
-                        <h2>DBMS</h2>        
-                    </div>
-                </section>
+            <div>
                 <div className="bg-light">
-                <form action = "" onSubmit = { (e) => {this.executeQuery(e)} }>
-                    <section className="input-section">
-                        <div className="container">
+                    <div className="container float-left">
+                        asd
+                    </div>
+                    <form action = "" onSubmit = { (e) => {this.executeQuery(e)} }>
+                        <section className="input-section">
+                            <div className="container">
+                            <p className="text-inst">Enter the SQL to execute below:</p>
+                            <div className="form-group">                           
+                                <textarea className="form-control" rows="5" id="input-sql" ref = {(sql_string) => this.sql_string = sql_string}>
+                                </textarea>
+                            </div>
 
-                        <p className="text-inst">Enter the SQL to execute below:</p>
-                        <div className="form-group">                           
-                            <textarea className="form-control" rows="5" id="input-sql" ref = {(sql_string) => this.sql_string = sql_string}>
-                            </textarea>
-                        </div>
-
-                        <button className="btn btn-success btn-sm" id="exec-btn">Execute</button>
-                        
-                        </div>
-                    </section>
-                </form>
+                            <button className="btn btn-success btn-sm" id="exec-btn">Execute</button>
+                            <div id="cover-spin"></div>
+                            </div>
+                        </section>
+                    </form>
                 
-                <div className="container">
-                    <div className="table-responsive">
-                        <table className="table table-bordered">
-                            <thead id = "rs-colheader">
-                            
-                            </thead>
-                            <tbody id = "rs-datarow">
-
-                            </tbody>
-                        </table>
-                    </div>
-                 </div>
-
-                {/* <p className="text-inst">or import file: <a href="#" className="btn btn-primary btn-sm" id="import-btn">Choose File</a></p> */}
-                {/* <section className="result-section">
                     <div className="container">
-                    
-                    <div className="form-group">
-                        <label htmlFor="result">Result:</label>
-                        <textarea className="form-control" rows="12" id="result-txt"></textarea>
+                        <div className="table-responsive">
+                            <table className="table table-bordered">
+                                <thead id = "rs-colheader">
+                                
+                                </thead>
+                                <tbody id = "rs-datarow">
+
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-
-                    <div className="table-responsive">
-                        <table className="table table-bordered">
-                        <thead>
-                            <tr>
-                            <th>head</th>
-                            <th>head</th>
-                            <th>head</th>
-                            <th>head</th>
-                            <th>head</th>
-                            <th>head</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            </tr>
-                            <tr>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            </tr>
-                            <tr>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            </tr>
-                            <tr>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            </tr>
-                            <tr>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            </tr>
-                            <tr>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            </tr>
-                        </tbody>
-                        </table>
-                    </div>
-
-                    </div>        
-                </section> */}
-
 
                 </div>
-
                 <footer className="text-muted">
-                <div className="container">        
-                    <p>&copy; CMSC227</p>        
-                </div>
+                    <div className="container">        
+                        <p>&copy; CMSC227</p>        
+                    </div>
                 </footer>
             </div>
         );
