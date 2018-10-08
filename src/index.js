@@ -206,7 +206,7 @@ class Root extends React.Component {
             <div>
                 <div className="bg-light">
                     <div className="container float-left">
-                        asd
+                        
                     </div>
                     <form action = "" onSubmit = { (e) => {this.executeQuery(e)} }>
                         <section className="input-section">
