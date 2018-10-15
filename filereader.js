@@ -29,7 +29,6 @@ http.createServer(function (req, res) {
             let whereClause = JSON.parse(data.where);
             fs.readFile('src/struct/'+tblname+'.json', 'utf8', function(err, contents){        
                 let cnts = JSON.parse(contents);
-                console.log(values.length);
                 let data = '';
                 if(whereClause.length > 0) {
                     data  = cnts.filter(function(r){
@@ -56,5 +55,3 @@ http.createServer(function (req, res) {
         }
     });
 }).listen(1337, "localhost");
-
-console.log('Server running at http://localhost:1337/')
