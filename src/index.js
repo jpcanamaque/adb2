@@ -25,14 +25,16 @@ class Root extends React.Component {
         const arr_sqlstring = sqlstring.split(';');
         if(arr_sqlstring.length > 1 && arr_sqlstring[arr_sqlstring.length - 1] !== "" ) {
             console.error('Current version can only execute one query at a time.');
+            let coverSpin = document.getElementById('cover-spin');
+            coverSpin.style.display = "none";
         } else {
             this.parseQuery(sqlstring, (sql_token) => {
                 if(typeof sql_token === 'object' || sql_token == 1) {
                     this.validateQuery(sql_token);
-                } else {
-                    alert('zxcv');
                 }
-            })
+                let coverSpin = document.getElementById('cover-spin');
+                coverSpin.style.display = "none";
+            });
         }
     }
 
@@ -41,7 +43,7 @@ class Root extends React.Component {
         try {
             flag = parser(sqlstring);
         } catch (ex) {
-            console.log(ex.message);
+            console.error("SQL error: " + ex.message);
         } 
         callback(flag);
     }
@@ -274,12 +276,17 @@ class Root extends React.Component {
         values.forEach(function(d,i) {
             let validateCols = validateColumnStructure(Object.keys(d)[0], d[Object.keys(d)[0]]);
             if(validateCols == '') {
-                cols[Object.keys(d)[0]] = d[Object.keys(d)[0]];
+                if(['haslab', 'unitsearned', 'noofunits', 'maxstud'].indexOf(Object.keys(d)[0]) !== -1) {
+                    cols[Object.keys(d)[0]] = (d[Object.keys(d)[0]] % 1 == 0) ? parseInt(d[Object.keys(d)[0]]) 
+                                    : parseFloat(d[Object.keys(d)[0]]);
+                } else {
+                    cols[Object.keys(d)[0]] = d[Object.keys(d)[0]];
+                }
             } else {
                 console.error("INSERT error: " + validateCols);
             }
         });
-
+        
         let url_qs = {cmd, tblName, vals : JSON.stringify(cols)};
 
         $.post('http://localhost:1337/', url_qs, function(d) {
@@ -296,21 +303,29 @@ class Root extends React.Component {
         let filename = tblName.toLowerCase() + ".json";
         let path = "/src/struct/" + filename;
         let cmd = 'delete';
+        let where_cols = "";
         $.getJSON(path, function(data) {
             if(whereClause.length > 0) {
                 data  = data.filter(function(r){
                     if(typeof whereClause[0].operation !== 'undefined') {                    
                         let firstEval = evaluateOper(whereClause[0].values[0].oper, r[whereClause[0].values[0].col],  whereClause[0].values[0].val);
                         let secondEval = evaluateOper(whereClause[0].values[1].oper, r[whereClause[0].values[1].col],  whereClause[0].values[1].val);
-                        return evaluateOper(whereClause[0].operation, firstEval, secondEval);
+                        where_cols = evaluateOper(whereClause[0].operation, firstEval, secondEval)
                     } else {
-                        return evaluateOper(whereClause[0].oper, r[whereClause[0].col],  whereClause[0].val); 
+                        where_cols = evaluateOper(whereClause[0].oper, r[whereClause[0].col],  whereClause[0].val); 
                     }
+                    return where_cols;
                 });
             }
 
-            let url_qs = {cmd, tblName, vals: JSON.stringify($data)};
-            
+            let url_qs = {cmd, tblName, vals: JSON.stringify(data), where: JSON.stringify(whereClause)};
+            $.post('http://localhost:1337/', url_qs, function(d) {
+                if(d == "1") {
+                    let affect_row = data.length;
+                    console.log('DELETE: '+ affect_row +' row/s affected.');
+                }
+            });
+
             let coverSpin = document.getElementById('cover-spin');
             coverSpin.style.display = "none";
         });
