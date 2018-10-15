@@ -1,3 +1,5 @@
+var dt = require('date-and-time');
+
 export function StructureConstants () {
     return {
         'STUDENT' : {
@@ -46,6 +48,8 @@ export function StructureConstants () {
 }
 
 export function validateTableStucture(tblName, columns, whereClause) {
+    whereClause = whereClause || []
+    columns = columns || []
     let tblStruct = StructureConstants();
     let ucaseTblname = tblName.toUpperCase();
     let isTableExists = typeof tblStruct[ucaseTblname] !== 'undefined' ? true : false;
@@ -105,4 +109,53 @@ export function evaluateOper(operation, left, right) {
         case 'or':
             return left || right;
     }
+}
+
+export function validateColumnStructure(column, value) {
+    let strValidation = '';
+    // console.log(column, value);
+    switch(column.toLowerCase()) {
+        case 'studno':
+            if( value.length !== 10 || (value.indexOf('-') == -1 || value.indexOf('-') !== 4) ) {
+                strValidation = column + " should follow YYYY-XXXXX format. (e.g. 2008-12345)";
+            }
+            break;
+        case 'birthday':
+            if(!dt.isValid(value, 'YYYY-MM-DD')) {
+                strValidation = column + " should follow YYYY-MM-DD format. (e.g. 2018-01-01)";
+            }
+            break;
+        case 'time':
+            if(!dt.isValid(value, 'HH:mm')) {
+                strValidation = column + " should follow HH24:mm format. (e.g. 22:22)";
+            }
+            break;
+        case 'semoffered':
+        case 'semester':
+            let allowed_vals = ['1st', '2nd', 'sum'];
+            if(allowed_vals.indexOf(value.toLowerCase()) == -1) {
+                strValidation = column + " only accepts '1st', '2nd', and 'Sum' values.";
+            }
+            break;
+        case 'haslab':
+            value = parseInt(value);
+            if(isNaN(value) || value !== 0 || value !== 1) {
+                strValidation = column + " only accepts 0's and 1's";
+            }
+            break;
+        case 'unitsearned':
+        case 'noofunits':
+        case 'maxstud':
+            value = (value % 1 > 0) ? parseFloat(value) : parseInt(value);
+            if(isNaN(value)) {
+                strValidation = column + " should be a number.";
+            }
+            break;
+    }
+
+    if(value.length > 50) {
+        strValidation = column + " should only contain a maximum of 50 characters.";
+    }
+
+    return strValidation;
 }

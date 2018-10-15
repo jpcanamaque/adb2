@@ -7,7 +7,7 @@ import './css/bootstrap.min.css';
 import './css/custom.css';
 
 
-import { StructureConstants, validateTableStucture, readfile, evaluateOper } from './helpers/structure';
+import { StructureConstants, validateTableStucture, evaluateOper, validateColumnStructure } from './helpers/structure';
 
 class Root extends React.Component {        
     constructor() {
@@ -15,10 +15,6 @@ class Root extends React.Component {
         this.parseQuery = this.parseQuery.bind(this);
         this.validateQuery = this.validateQuery.bind(this);
         this.selectData = this.selectData.bind(this);
-    }
-
-    componentDidMount () {
-
     }
 
     executeQuery(e) {
@@ -52,7 +48,7 @@ class Root extends React.Component {
 
     validateQuery(sql_token) {
         let statement = sql_token.statement[0];
-        let tblName, columns, isQueryValid, whereClause = [];
+        let tblName, columns, values, isQueryValid, whereClause = [];
         switch(statement.variant.toUpperCase()) {
             case "SELECT":
                 tblName = statement.from.name;
@@ -92,12 +88,11 @@ class Root extends React.Component {
                                         }
                                     ]};
                                 }
-
                             } else if (leftCond.type !== 'expression' && rightCond.type !== 'expression') {
                                 let firstFilterTarget = leftCond.name;
                                 let firstFilterOper = d.operation;
                                 let firstFilterValue = rightCond.value;
-    
+
                                 return {
                                     'col' : firstFilterTarget,
                                     'oper' : firstFilterOper,
@@ -135,17 +130,88 @@ class Root extends React.Component {
                     return d.name;
                 });
 
+                values = statement.result[0].expression.map(function(d,i) {
+                    let x = {}
+                    x[statement.into.columns[i].name] = d.value || d.name;
+                    return x;
+                });
+
                 isQueryValid = validateTableStucture(tblName, columns);
                 if(isQueryValid !== '') {
                     console.error('INSERT error: ' + isQueryValid);
                 } else {
-                    this.insertData(tblName, columns);
+                    this.insertData(tblName, columns, values);
                 }
+
                 break;
 
             case "DELETE":
-                console.log(statement);
                 tblName = statement.from.name;
+
+                if(typeof statement.where !== 'undefined') {
+                    whereClause = statement.where.map(function(d,i) {
+                        if(['and', 'or', '<', '>', '=', '<=', '>='].indexOf(d.operation) >= 0) {
+                            let leftCond = d.left;
+                            let rightCond = d.right;
+                            
+                            if((['and', 'or'].indexOf(leftCond.operation) === -1 || ['and', 'or'].indexOf(rightCond.operation) === -1)
+                            && (typeof leftCond.operation !== 'undefined' && typeof rightCond.operation !== 'undefined')
+                            ) {
+                                if(['and', 'or'].indexOf(leftCond.operation) > -1 || ['and', 'or'].indexOf(rightCond.operation) > -1) {
+                                    isQueryValid = "Only TWO conditions are supported in this version";
+                                    return [];
+                                } else {
+                                    let firstFilterTarget = leftCond.left.name;
+                                    let firstFilterOper = leftCond.operation;
+                                    let firstFilterValue = leftCond.right.value || leftCond.right.name;
+        
+                                    let secondFilterTarget = rightCond.left.name;
+                                    let secondFilterOper = rightCond.operation;
+                                    let secondFilterValue = rightCond.right.value ||  rightCond.right.name;
+                                    
+                                    return { operation : d.operation, values : [
+                                       {          
+                                            'col' : firstFilterTarget,
+                                            'oper' : firstFilterOper,
+                                            'val' : firstFilterValue
+                                        }, {
+                                            'col' : secondFilterTarget,
+                                            'oper' : secondFilterOper,
+                                            'val' : secondFilterValue
+                                        }
+                                    ]};
+                                }
+                            } else if (leftCond.type !== 'expression' && rightCond.type !== 'expression') {
+                                let firstFilterTarget = leftCond.name;
+                                let firstFilterOper = d.operation;
+                                let firstFilterValue = rightCond.value;
+
+                                return {
+                                    'col' : firstFilterTarget,
+                                    'oper' : firstFilterOper,
+                                    'val' : firstFilterValue
+                                };
+                            } else {
+                                isQueryValid = "Only TWO conditions are supported in this version";
+                            }                      
+                        } else {
+                            isQueryValid = 'SELECT error: Only AND, OR or basic comparison operators are supported in this version';
+                        }
+                    });
+                }
+
+                console.log(tblName, whereClause);
+
+                if(isQueryValid === '' || typeof isQueryValid === 'undefined') {
+                    isQueryValid = validateTableStucture(tblName, columns, whereClause);
+                } 
+
+                if(isQueryValid !== '') {
+                    console.error('DELETE error: ' + isQueryValid);
+                } else {
+                    this.deleteData(tblName, whereClause);
+                }
+
                 break;
 
             default:
@@ -168,7 +234,7 @@ class Root extends React.Component {
                 cols = columns;
             }
             cols.forEach(function(d,i) {
-                thead_content += "<th>" + d + "</th>";
+                thead_content += "<th>" + d.toLowerCase() + "</th>";
             });
             
             if(whereClause.length > 0) {
@@ -197,10 +263,59 @@ class Root extends React.Component {
         });
     }
 
-    insertData (tblName, columns) {
-        console.log("inserting data");
+    insertData (tblName, columns, values) {
+        let cols = {};
+        let cmd = "insert";
+        Object.keys(StructureConstants()[tblName.toUpperCase()]).forEach(function(d,i) {
+            if(d !== "*")
+                cols[d.toLowerCase()] = null;
+        });
+
+        values.forEach(function(d,i) {
+            let validateCols = validateColumnStructure(Object.keys(d)[0], d[Object.keys(d)[0]]);
+            if(validateCols == '') {
+                cols[Object.keys(d)[0]] = d[Object.keys(d)[0]];
+            } else {
+                console.error("INSERT error: " + validateCols);
+            }
+        });
+
+        let url_qs = {cmd, tblName, vals : JSON.stringify(cols)};
+
+        $.post('http://localhost:1337/', url_qs, function(d) {
+            if(d == "1") {
+                console.log('INSERT: 1 row inserted.')
+            }
+        });
+
+        let coverSpin = document.getElementById('cover-spin');
+        coverSpin.style.display = "none";
     }
-        
+
+    deleteData (tblName, whereClause) {
+        let filename = tblName.toLowerCase() + ".json";
+        let path = "/src/struct/" + filename;
+        let cmd = 'delete';
+        $.getJSON(path, function(data) {
+            if(whereClause.length > 0) {
+                data  = data.filter(function(r){
+                    if(typeof whereClause[0].operation !== 'undefined') {                    
+                        let firstEval = evaluateOper(whereClause[0].values[0].oper, r[whereClause[0].values[0].col],  whereClause[0].values[0].val);
+                        let secondEval = evaluateOper(whereClause[0].values[1].oper, r[whereClause[0].values[1].col],  whereClause[0].values[1].val);
+                        return evaluateOper(whereClause[0].operation, firstEval, secondEval);
+                    } else {
+                        return evaluateOper(whereClause[0].oper, r[whereClause[0].col],  whereClause[0].val); 
+                    }
+                });
+            }
+
+            let url_qs = {cmd, tblName, vals: JSON.stringify($data)};
+            
+            let coverSpin = document.getElementById('cover-spin');
+            coverSpin.style.display = "none";
+        });
+    }
+
     render () {
         return (
             <div>
