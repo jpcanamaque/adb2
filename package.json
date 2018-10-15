@@ -5,6 +5,7 @@
   "main": "webpack.config.js",
   "scripts": {
     "build": "node filereader.js | webpack --config webpack_prod.config.js && node server.js",
+    "prod": "node filereader.js | webpack-dev-server --config webpack_prod.config.js --progress --colors",
     "dev": "node filereader.js | webpack-dev-server --config webpack_dev.config.js --progress --colors",
     "help": "webpack --help"
   },
