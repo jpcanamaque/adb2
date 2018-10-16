@@ -6,6 +6,8 @@ import $ from 'jquery';
 import './css/bootstrap.min.css';
 import './css/custom.css';
 
+import './js/import.js';
+import './js/papaparse.min.js';
 
 import { StructureConstants, validateTableStucture, evaluateOper, validateColumnStructure } from './helpers/structure';
 
@@ -37,7 +39,8 @@ class Root extends React.Component {
             });
         }
     }
-
+    
+    //returns token
     parseQuery(sqlstring, callback) {
         let flag = 0;
         try {
@@ -287,6 +290,7 @@ class Root extends React.Component {
             }
         });
         
+
         let url_qs = {cmd, tblName, vals : JSON.stringify(cols)};
 
         $.post('http://localhost:1337/', url_qs, function(d) {
@@ -333,7 +337,13 @@ class Root extends React.Component {
 
     render () {
         return (
+            
             <div>
+                <section class="top-section text-center">
+                  <div class="container">
+                    <h2>DBMS</h2>        
+                  </div>
+                </section>
                 <div className="bg-light">
                     <div className="container float-left">
                         
@@ -348,6 +358,11 @@ class Root extends React.Component {
                             </div>
 
                             <button className="btn btn-success btn-sm" id="exec-btn">Execute</button>
+                            <div class="form-group">
+                                <label for="input-sql">Enter SQL</label> or import file: <input type="file" id="fileInput"  accept=".csv"/>
+                                <textarea class="form-control" rows="10" id="fileDisplayArea"></textarea>
+                            </div>
+          
                             <div id="cover-spin"></div>
                             </div>
                         </section>
@@ -375,6 +390,7 @@ class Root extends React.Component {
             </div>
         );
     }
+
 }
 
 
