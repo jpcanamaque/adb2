@@ -6,8 +6,10 @@ import $ from 'jquery';
 import './css/bootstrap.min.css';
 import './css/custom.css';
 
-import './js/import.js';
+// import './js/import.js';
 import './js/papaparse.min.js';
+
+import {loadParse} from './js/import';
 
 import { StructureConstants, validateTableStucture, evaluateOper, validateColumnStructure } from './helpers/structure';
 
@@ -39,6 +41,17 @@ class Root extends React.Component {
             });
         }
     }
+
+    executeImport(e){
+        // e.preventDefault();
+        // let coverSpin = document.getElementById('cover-spin');
+        // coverSpin.style.display = "block";
+        console.log('Execute Import...');
+        let test = loadParse();
+        console.log('import file result:');
+        console.log(test);
+        console.log(test[0]);
+    }
     
     //returns token
     parseQuery(sqlstring, callback) {
@@ -48,6 +61,8 @@ class Root extends React.Component {
         } catch (ex) {
             console.error("SQL error: " + ex.message);
         } 
+        console.log('Log:');
+        console.log(flag);
         callback(flag);
     }
 
@@ -359,8 +374,9 @@ class Root extends React.Component {
 
                             <button className="btn btn-success btn-sm" id="exec-btn">Execute</button>
                             <div class="form-group">
-                                <label for="input-sql">Enter SQL</label> or import file: <input type="file" id="fileInput"  accept=".csv"/>
-                                <textarea class="form-control" rows="10" id="fileDisplayArea"></textarea>
+                                <label for="input-sql">Enter SQL</label> or import file: <input type="file" id="fileInput"  accept=".csv" onChange={(e) => {this.executeImport(e)}}/>
+                                {/* <textarea class="form-control" rows="10" id="fileDisplayArea"></textarea> */}
+                                <input type="hidden" id="importedFile"/>
                             </div>
           
                             <div id="cover-spin"></div>
