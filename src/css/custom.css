@@ -1,7 +1,7 @@
 /*top-section*/
 .top-section{
-	padding-top: 40px;
-	padding-bottom: 30px;
+    padding-top: 40px;
+    padding-bottom: 30px;
 }
 
 /*main-area*/
@@ -11,17 +11,33 @@
 
 /*input-section*/
 .input-section{
-	padding-top: 30px;
-	padding-bottom: 30px;
+    padding-top: 30px;
+    padding-bottom: 30px;
 }
-/*.text-inst{
-	padding-bottom: 1px;
-}*/
+
+.input-section textarea{   
+    margin-bottom: 0.5em;
+}
+
+#importBtn{
+    margin-left: 10px;
+}
+
+#fileInput{
+    display: none;
+}
+
+#errorDisplayArea{
+  margin-top: 0.8em;
+  width: 100%;
+  overflow-x: auto;
+  display:none;
+}
 
 /*result-section*/
 .result-section{
-	padding-top: 20px;
-	padding-bottom: 30px;
+    padding-top: 20px;
+    padding-bottom: 30px;
 }
 
 #result-txt{
@@ -45,16 +61,6 @@ footer {
     color: #6c757d!important;
 }
 
-.input-section .form-group, .input-section .form-group input{   
-    margin-bottom: 0.5em;
-}
-
-#errorDisplayArea{
-  margin-top: 0.8em;
-  width: 100%;
-  overflow-x: auto;
-  display:none;
-}
 
 /*page loader*/
 #cover-spin {

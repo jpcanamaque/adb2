@@ -6,10 +6,6 @@ import $ from 'jquery';
 import './css/bootstrap.min.css';
 import './css/custom.css';
 
-// import './js/import.js';
-import './js/papaparse.min.js';
-
-import {loadParse} from './js/import';
 
 import { StructureConstants, validateTableStucture, evaluateOper, validateColumnStructure } from './helpers/structure';
 
@@ -42,15 +38,20 @@ class Root extends React.Component {
         }
     }
 
-    executeImport(e){
-        // e.preventDefault();
-        // let coverSpin = document.getElementById('cover-spin');
-        // coverSpin.style.display = "block";
-        console.log('Execute Import...');
-        let test = loadParse();
-        console.log('import file result:');
-        console.log(test);
-        console.log(test[0]);
+    getJsonData(result) {
+        let jsonData = JSON.stringify(result.data);
+        console.log(jsonData);
+    }
+
+    executeImport(selectorFiles: FileList){        
+        let file = selectorFiles[0]; 
+
+        const Papa = require('papaparse');
+        Papa.parse(file, {
+            header: true,
+            dynamicTyping: true,       
+            complete: this.getJsonData
+        });
     }
     
     //returns token
@@ -350,39 +351,41 @@ class Root extends React.Component {
         });
     }
 
+    clickFile(e) {
+        var object = this.refs.fileInput;
+        object.click();
+    }
+
     render () {
         return (
             
             <div>
-                <section class="top-section text-center">
-                  <div class="container">
+                <section className="top-section text-center">
+                  <div className="container">
                     <h2>DBMS</h2>        
                   </div>
                 </section>
                 <div className="bg-light">
-                    <div className="container float-left">
-                        
-                    </div>
-                    <form action = "" onSubmit = { (e) => {this.executeQuery(e)} }>
-                        <section className="input-section">
-                            <div className="container">
-                            <p className="text-inst">Enter the SQL to execute below:</p>
-                            <div className="form-group">                           
-                                <textarea className="form-control" rows="5" id="input-sql" ref = {(sql_string) => this.sql_string = sql_string}>
-                                </textarea>
-                            </div>
+                    <section className="input-section">
+                        <div className="container">
 
-                            <button className="btn btn-success btn-sm" id="exec-btn">Execute</button>
-                            <div class="form-group">
-                                <label for="input-sql">Enter SQL</label> or import file: <input type="file" id="fileInput"  accept=".csv" onChange={(e) => {this.executeImport(e)}}/>
-                                {/* <textarea class="form-control" rows="10" id="fileDisplayArea"></textarea> */}
-                                <input type="hidden" id="importedFile"/>
-                            </div>
-          
-                            <div id="cover-spin"></div>
-                            </div>
-                        </section>
-                    </form>
+                            <form action = "" onSubmit = { (e) => {this.executeQuery(e)} }>
+                                
+                                    <p>Enter the SQL to execute below:</p>                                                               
+                                    <textarea className="form-control" rows="5" id="fileDisplayArea" ref = {(sql_string) => this.sql_string = sql_string}>
+                                    </textarea>                                    
+
+                                    <button className="btn btn-success btn-md" id="exec-btn">Execute</button>                                    
+                                                                        
+                                    <input type="button" className="btn btn-md" id="importBtn" value="Import File" onClick={(e) => this.clickFile(e)} />                                         
+                                    <input type="file" id="fileInput" ref="fileInput" accept=".csv" onChange={(e) => {this.executeImport(e.target.files)}}/>
+
+                                    <div id="cover-spin"></div>  
+
+                                    <div id="errorDisplayArea" className="alert alert-danger"></div>                                
+                            </form>
+                        </div>
+                    </section>
                 
                     <div className="container">
                         <div className="table-responsive">
