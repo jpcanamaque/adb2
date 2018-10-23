@@ -41,6 +41,15 @@ class Root extends React.Component {
     getJsonData(result) {
         let jsonData = JSON.stringify(result.data);
         console.log(jsonData);
+
+        let col = ["studno","studentname","birthday","degree","major","unitsearned"];
+
+        this.createSqlQuery("student", col, jsonData);
+    }
+
+    getGeneratedSql(result){
+        console.log('generated Sql query:');
+        console.log(result);
     }
 
     executeImport(selectorFiles: FileList){        
@@ -54,6 +63,66 @@ class Root extends React.Component {
         });
     }
     
+    createSqlQuery(tableName: string, columns: string[], obj: any) {
+        this.generatedSqlQuery = `INSERT INTO ${tableName} `
+        let columnList = "";
+        columnList = columnList + "("
+        for (let index = 0; index < columns.length; index++) {
+          if (index == columns.length - 1) {
+            columnList = columnList + columns[index];
+          } else {
+            columnList = columnList + columns[index] + ",";
+          }
+        }
+        this.generatedSqlQuery = this.generatedSqlQuery + columnList + ") VALUES ";
+    
+        for (let index = 0; index < obj.length; index++) {
+          let item = obj[index];
+    
+          if (index == columns.length - 1) {
+            this.generatedSqlQuery = this.generatedSqlQuery + "(";
+            for (var key in obj[index]) {
+              if (obj[index].hasOwnProperty(key)) {
+                var val = obj[index][key];
+                this.generatedSqlQuery = this.generatedSqlQuery + val + ",";
+              }
+            }
+            this.generatedSqlQuery = this.generatedSqlQuery.slice(0, -1);
+            this.generatedSqlQuery = this.generatedSqlQuery + ")";
+            if (index == columns.length - 1) {
+              this.generatedSqlQuery = this.generatedSqlQuery + ",";
+            }
+            if (obj.length == 1) {
+              this.generatedSqlQuery = this.generatedSqlQuery.slice(0, -1);
+            }
+          } else {
+            this.generatedSqlQuery = this.generatedSqlQuery + "(";
+            let length = 0;
+            for (var key in obj[index]) {
+              length++;
+            }
+            for (var key in obj[index]) {
+              if (obj[index].hasOwnProperty(key)) {
+                var val = obj[index][key];
+                this.generatedSqlQuery = this.generatedSqlQuery + val + ",";
+              }
+            }
+            this.generatedSqlQuery = this.generatedSqlQuery.slice(0, -1);
+            this.generatedSqlQuery = this.generatedSqlQuery + "),";
+            if (obj.length == 1) {
+              this.generatedSqlQuery = this.generatedSqlQuery.slice(0, -1);
+            }
+            
+          }
+        }
+        if (obj.length > 1) {
+          this.generatedSqlQuery = this.generatedSqlQuery.slice(0, -1);
+        }
+        
+        // return this.generatedSqlQuery;
+        this.getGeneratedSql(this.generatedSqlQuery);
+      }
+
     //returns token
     parseQuery(sqlstring, callback) {
         let flag = 0;
