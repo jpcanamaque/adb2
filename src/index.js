@@ -39,12 +39,14 @@ class Root extends React.Component {
     }
 
     getJsonData(result) {
+        console.log('RESULT:');
+        console.log(result.data);
         let jsonData = JSON.stringify(result.data);
         console.log(jsonData);
 
         let col = ["studno","studentname","birthday","degree","major","unitsearned"];
 
-        this.createSqlQuery("student", col, jsonData);
+        // this.createSqlQuery("student", col, jsonData);
     }
 
     getGeneratedSql(result){
@@ -138,7 +140,7 @@ class Root extends React.Component {
 
     validateQuery(sql_token) {
         let statement = sql_token.statement[0];
-        let tblName, columns, values, isQueryValid, whereClause = [];
+        let tblName, columns, values, isQueryValid, whereClause = [], values2=[];
         switch(statement.variant.toUpperCase()) {
             case "SELECT":
                 tblName = statement.from.name;
@@ -216,17 +218,35 @@ class Root extends React.Component {
                     console.error('INSERT error: Column-less insert not supported in this version.');
                     break;
                 }
+                console.log("Statement:");
+                console.log(statement);
                 columns = statement.into.columns.map(function(d,i) {
                     return d.name;
                 });
-
-                values = statement.result[0].expression.map(function(d,i) {
-                    let x = {}
-                    x[statement.into.columns[i].name] = d.value || d.name;
-                    return x;
+                console.log('Statement Results:');
+                console.log(statement.result);
+                console.log(statement.result.length);
+                let new_results;
+                new_results = statement.result;
+               
+                new_results.forEach(function(d,i){
+                    values2.push(statement.result[i].expression.map(function(d,i) {
+                        let x = {}
+                        x[statement.into.columns[i].name] = d.value || d.name;
+                        return x;
+                    }));
                 });
 
+                // values2 = statement.result[0].expression.map(function(d,i) {
+                //     let x = {}
+                //     x[statement.into.columns[i].name] = d.value || d.name;
+                //     return x;
+                // });
+                values = values2;
+                console.log('values to Pass:');
+                console.log(values);
                 isQueryValid = validateTableStucture(tblName, columns);
+                console.log('isQueryValid: '+isQueryValid);
                 if(isQueryValid !== '') {
                     console.error('INSERT error: ' + isQueryValid);
                 } else {
@@ -353,30 +373,79 @@ class Root extends React.Component {
         });
     }
 
-    insertData (tblName, columns, values) {
+    insertData (tblName, columns, values2) {
         let cols = {};
         let cmd = "insert";
+        let data_temp = {};
+        
         Object.keys(StructureConstants()[tblName.toUpperCase()]).forEach(function(d,i) {
             if(d !== "*")
                 cols[d.toLowerCase()] = null;
         });
+        console.log('cols: ');
+        console.log(cols);
+        console.log('Check values here: ');
+        console.log(values2);
 
-        values.forEach(function(d,i) {
-            let validateCols = validateColumnStructure(Object.keys(d)[0], d[Object.keys(d)[0]]);
-            if(validateCols == '') {
-                if(['haslab', 'unitsearned', 'noofunits', 'maxstud'].indexOf(Object.keys(d)[0]) !== -1) {
-                    cols[Object.keys(d)[0]] = (d[Object.keys(d)[0]] % 1 == 0) ? parseInt(d[Object.keys(d)[0]]) 
-                                    : parseFloat(d[Object.keys(d)[0]]);
+        // new_results.forEach(function(d,i){
+        //     values2.push(statement.result[i].expression.map(function(d,i) {
+        //         let x = {}
+        //         x[statement.into.columns[i].name] = d.value || d.name;
+        //         return x;
+        //     }));
+        // });
+
+        let values2_temp, cols2=[];
+
+        values2.forEach(function(data,key) { 
+            console.log('HERE '+key);
+            values2_temp = data;
+            console.log(values2_temp);
+            cols = {};
+            console.log('CHECK COLS: ');
+            console.log(cols);
+            console.log(data_temp);
+            values2_temp.forEach(function(d,i){
+                let validateCols = validateColumnStructure(JSON.stringify(Object.keys(d)), d[Object.keys(d)]);
+                if(validateCols == '') {
+                    if(['haslab', 'unitsearned', 'noofunits', 'maxstud'].indexOf(Object.keys(d)[0]) !== -1) {
+                        cols[Object.keys(d)] = (d[Object.keys(d)] % 1 == 0) ? parseInt(d[Object.keys(d)]) 
+                                        : parseFloat(d[Object.keys(d)]);
+                    } else {
+                        cols[Object.keys(d)] = d[Object.keys(d)];
+                    }
                 } else {
-                    cols[Object.keys(d)[0]] = d[Object.keys(d)[0]];
+                    console.error("INSERT error: " + validateCols);
                 }
-            } else {
-                console.error("INSERT error: " + validateCols);
-            }
+            });
+            // cols2.push(cols);
+            console.log('PRE:');
+            console.log(cols);
+            console.log('PRE key:'+key);
+            data_temp[key] = cols ;
+            // console.log('DATA TEMP: ');
+            console.log(data_temp);
+            
         });
         
+        // let sample_val = JSON.stringify(data_temp);
+        // let sample_val  = [data_temp[0],data_temp[1]];
+        // console.log('SAmple');
+        // console.log(sample_val);
+        // let url_qs = {cmd, tblName, vals : JSON.stringify(data_temp)};
+        let url_qs = {cmd, tblName, vals : JSON.stringify(data_temp)};
+        console.log('url_qs');
+        console.log(url_qs);
 
-        let url_qs = {cmd, tblName, vals : JSON.stringify(cols)};
+        // sample2.forEach(function(data,key){
+        //     console.log(data);
+        //     console.log(key);
+        // });
+        // let sizeofvar = Object.keys(sample2).length;
+        // console.log(sizeofvar);
+        // for(let i=0;i<sizeofvar;i++){
+        //    console.log(JSON.parse(JSON.stringify(sample2[i])));
+        // }
 
         $.post('http://localhost:1337/', url_qs, function(d) {
             if(d == "1") {

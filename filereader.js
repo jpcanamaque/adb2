@@ -15,11 +15,20 @@ http.createServer(function (req, res) {
         let cmd = data.cmd;
         let tblname = data.tblName;
         let values = JSON.parse(data.vals);
-
         if(cmd == 'insert') {
-            fs.readFile('src/struct/'+tblname+'.json', 'utf8', function(err, contents){        
-                let cnts = JSON.parse(contents);
-                cnts.push(values);
+            fs.readFile('src/struct/'+tblname+'.json', 'utf8', function(err, contents){ 
+                let sizeofConts = Object.keys(contents).length;       
+                let cnts;
+                if(sizeofConts > 0){
+                    cnts = JSON.parse(contents);
+                }else{
+                    cnts=[];
+                }
+                // cnts.push(values);
+                let sizeofvar = Object.keys(values).length;
+                for(let i=0;i<sizeofvar;i++){
+                    cnts.push(values[i]);
+                }
                 cnts = JSON.stringify(cnts);
                 fs.writeFile('src/struct/'+tblname+'.json', cnts, function(err, contents){
                     res.end('1');
