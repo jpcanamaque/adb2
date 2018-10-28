@@ -45,15 +45,9 @@ class Root extends React.Component {
         console.log(jsonData);
 
         let col = ["studno","studentname","birthday","degree","major","unitsearned"];
-
-        // this.createSqlQuery("student", col, jsonData);
     }
 
-    getGeneratedSql(result){
-        console.log('generated Sql query:');
-        console.log(result);
-    }
-
+ 
     executeImport(selectorFiles: FileList){        
         let file = selectorFiles[0]; 
 
@@ -61,7 +55,58 @@ class Root extends React.Component {
         Papa.parse(file, {
             header: true,
             dynamicTyping: true,       
-            complete: this.getJsonData
+            complete: function(result){
+                console.log(result.data);
+                let values2 = (result.data);
+                let tblName = 'student';   //Should not be hardcoded
+        
+                let cols = {};
+                let cmd = "insert";
+                let data_temp = {};
+                
+                Object.keys(StructureConstants()[tblName.toUpperCase()]).forEach(function(d,i) {
+                    if(d !== "*")
+                        cols[d.toLowerCase()] = null;
+                });
+        
+                let values2_temp, cols2=[];
+        
+                values2.forEach(function(d,i) { 
+                    cols = {};
+                    values2_temp = Object.keys(d);
+                    values2_temp.forEach(function(d1,i1){
+                     
+                        if(d[d1] != null || d[d1] == ''){
+                            let validateCols = validateColumnStructure(d1, d[d1]);
+                      
+                            if(validateCols == '') {
+                                if(['haslab', 'unitsearned', 'noofunits', 'maxstud'].indexOf(d1) !== -1) {
+                                    cols[d1] = (d[d1] % 1 == 0) ? parseInt(d[d1]) 
+                                                    : parseFloat(d[d1]);
+                                } else {
+                                    cols[d1] = d[d1];
+                                }
+                            } else {
+                                console.error("INSERT error: " + validateCols);
+                            }
+                        }
+                    });
+
+                    data_temp[i] = cols ;
+                });
+               
+       
+                let url_qs = {cmd, tblName, vals : JSON.stringify(data_temp)};
+               
+                $.post('http://localhost:1337/', url_qs, function(d) {
+                    if(d == "1") {
+                        console.log('INSERT: 1 row inserted.')
+                    }
+                });
+        
+                let coverSpin = document.getElementById('cover-spin');
+                coverSpin.style.display = "none";
+            }
         });
     }
     
@@ -218,14 +263,11 @@ class Root extends React.Component {
                     console.error('INSERT error: Column-less insert not supported in this version.');
                     break;
                 }
-                console.log("Statement:");
-                console.log(statement);
+              
                 columns = statement.into.columns.map(function(d,i) {
                     return d.name;
                 });
-                console.log('Statement Results:');
-                console.log(statement.result);
-                console.log(statement.result.length);
+               
                 let new_results;
                 new_results = statement.result;
                
@@ -237,16 +279,11 @@ class Root extends React.Component {
                     }));
                 });
 
-                // values2 = statement.result[0].expression.map(function(d,i) {
-                //     let x = {}
-                //     x[statement.into.columns[i].name] = d.value || d.name;
-                //     return x;
-                // });
+              
                 values = values2;
-                console.log('values to Pass:');
-                console.log(values);
+               
                 isQueryValid = validateTableStucture(tblName, columns);
-                console.log('isQueryValid: '+isQueryValid);
+              
                 if(isQueryValid !== '') {
                     console.error('INSERT error: ' + isQueryValid);
                 } else {
@@ -330,7 +367,7 @@ class Root extends React.Component {
         }
     }
 
-    selectData (tblName, columns, whereClause) {
+    selectData (tblName,columns, whereClause) {
         let filename = tblName.toLowerCase() + ".json";
         let path = "/src/struct/" + filename;
         let thead_content = "<tr>";
@@ -342,6 +379,7 @@ class Root extends React.Component {
                 cols = Object.keys(StructureConstants()[tblName.toUpperCase()]).filter(col => { return col !== "*"; });
             } else {
                 cols = columns;
+                
             }
             cols.forEach(function(d,i) {
                 thead_content += "<th>" + d.toLowerCase() + "</th>";
@@ -358,6 +396,7 @@ class Root extends React.Component {
                     }
                 });
             }
+            
 
             data.forEach(function(d,i) {
                 cols.forEach(function(e,f) {
