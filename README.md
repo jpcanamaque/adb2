@@ -1,4 +1,4 @@
-# adb2
+# iWantDB
 
 Project in CMSC227
 
