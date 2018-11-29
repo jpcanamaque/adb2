@@ -5,6 +5,8 @@ Project in CMSC227
 
 **Group Members:**
 - Johnroe Paulo Canamaque <<jcanamaque@up.edu.ph>>
+- Mae Ezra Abundo <<mtabundo@up.edu.ph>>
+- Joani Antonio <<jcantonio3@up.edu.ph>>
 
 
 ##### Installation guide
