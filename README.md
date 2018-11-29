@@ -9,7 +9,7 @@ Project in CMSC227
 - Joanie Antonio <<jcantonio3@up.edu.ph>>
 
 
-### Installation guide
+#### Installation guide
 
 If you don't have [`node.js`](https://nodejs.org/en/download/) installed, install it first.
 
