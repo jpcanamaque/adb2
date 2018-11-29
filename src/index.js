@@ -539,7 +539,9 @@ class Root extends React.Component {
             <div>
                 <section className="top-section text-center">
                   <div className="container">
-                    <h2>DBMS</h2>        
+                    
+                    
+                  <img src={require('../src/img/logo.png')} />
                   </div>
                 </section>
                 <div className="bg-light">
