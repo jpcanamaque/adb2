@@ -1,13 +1,15 @@
-# adb2
+# iWantDB
 
 Project in CMSC227
 
 
 **Group Members:**
 - Johnroe Paulo Canamaque <<jcanamaque@up.edu.ph>>
+- Mae Ezra Abundo <<mtabundo@up.edu.ph>>
+- Joanie Antonio <<jcantonio3@up.edu.ph>>
 
 
-##### Installation guide
+#### Installation guide
 
 If you don't have [`node.js`](https://nodejs.org/en/download/) installed, install it first.
 
