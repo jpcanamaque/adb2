@@ -1,12 +1,44 @@
-/*top-section*/
-.top-section{
-    padding-top: 40px;
-    padding-bottom: 30px;
+
+body{
+    font-family: "Trebuchet MS", Helvetica, sans-serif !important;
+    height: 100%;
+}
+
+.row{
+    width:100%;
 }
 
 /*main-area*/
-.bg-light{
-    background-color: #f8f9fa!important;
+
+.sidebar, .content{
+    
+}
+
+.sidebar{
+    background-color: #f7f7f7;
+    border-right: 1px solid #eee;
+    width: 400px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    bottom:60px;
+    overflow-x: hidden;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+.content{
+    height: 100vh;
+    margin-left: 450px;
+    
+    padding-right: 40px;
+}
+
+.top-section, .sidebar{
+    padding-top: 40px;
+    padding-bottom: 30px;
+    
 }
 
 /*input-section*/
@@ -15,16 +47,33 @@
     padding-bottom: 30px;
 }
 
-.input-section textarea{   
-    margin-bottom: 0.5em;
+.input-section textarea{ 
+    margin-top: -0.8em;
+    margin-bottom: 1em;
 }
 
 #importBtn{
     margin-left: 10px;
 }
 
+.btn-primary{
+    background-color: #464846 !important;
+    background-image: linear-gradient(-180deg, #a5a9a6, #464846 90%) !important;
+    border-color: #8e8e8e !important;
+}
+
+.btn-success{
+    background-color: #2d7b88 !important;
+    background-image: linear-gradient(-180deg, #3fbfd4, #2d7b88 90%) !important;
+    border-color: #3da5b7 !important;
+}
+
 #fileInput{
     display: none;
+}
+
+#fileDisplayArea{
+     width: 100%;
 }
 
 #errorDisplayArea{
@@ -53,12 +102,19 @@
 
 /*footer*/
 footer {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
+    padding-top: 1.3rem;
+    
+    position:fixed;
+    bottom:0;
+    width: 100%;
+    height:60px;   
+    background:#414141;
 }
 
-.text-muted {
-    color: #6c757d!important;
+footer #copy-text{
+    margin-left: 2em;
+    color: #f7f3f3 !important;
+    font-size: 14px;
 }
 
 

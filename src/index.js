@@ -1,9 +1,12 @@
 import React from 'react';
 import { render } from 'react-dom';
 import parser from 'sqlite-parser';
-import $ from 'jquery';
+// import $ from 'jquery';
 
-import './css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.min.js';
+import 'jquery/dist/jquery.min.js';
+
 import './css/custom.css';
 
 
@@ -536,54 +539,108 @@ class Root extends React.Component {
     render () {
         return (
             
-            <div>
-                <section className="top-section text-center">
-                  <div className="container">
-                    
-                    
-                  <img src={require('../src/img/logo.png')} />
-                  </div>
-                </section>
-                <div className="bg-light">
-                    <section className="input-section">
-                        <div className="container">
+            <div >
+                <div className="row">
 
-                            <form action = "" onSubmit = { (e) => {this.executeQuery(e)} }>
-                                
-                                    <p>Enter the SQL to execute below:</p>                                                               
-                                    <textarea className="form-control" rows="5" id="fileDisplayArea" ref = {(sql_string) => this.sql_string = sql_string}>
-                                    </textarea>                                    
+                    <div className="sidebar">                                
+                         
 
-                                    <button className="btn btn-success btn-md" id="exec-btn">Execute</button>                                    
-                                                                        
-                                    <input type="button" className="btn btn-md" id="importBtn" value="Import File" onClick={(e) => this.clickFile(e)} />                                         
-                                    <input type="file" id="fileInput" ref="fileInput" accept=".csv" onChange={(e) => {this.executeImport(e.target.files)}}/>
+                        <div class="panel-group" id="accordion">
+                              <div class="panel panel-default">
+                                <div class="panel-heading">
+                                  <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+                                    Collapsible Group 1</a>
+                                  </h4>
+                                </div>
+                                <div id="collapse1" class="panel-collapse collapse in">
+                                  <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                                  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+                                  minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+                                  commodo consequat.</div>
+                                </div>
+                              </div>
+                              <div class="panel panel-default">
+                                <div class="panel-heading">
+                                  <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
+                                    Collapsible Group 2</a>
+                                  </h4>
+                                </div>
+                                <div id="collapse2" class="panel-collapse collapse">
+                                  <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                                  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+                                  minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+                                  commodo consequat.</div>
+                                </div>
+                              </div>
+                              <div class="panel panel-default">
+                                <div class="panel-heading">
+                                  <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">
+                                    Collapsible Group 3</a>
+                                  </h4>
+                                </div>
+                                <div id="collapse3" class="panel-collapse collapse">
+                                  <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                                  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+                                  minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+                                  commodo consequat.</div>
+                                </div>
+                              </div>
+                            </div>
 
-                                    <div id="cover-spin"></div>  
 
-                                    <div id="errorDisplayArea" className="alert alert-danger"></div>                                
-                            </form>
-                        </div>
-                    </section>
-                
-                    <div className="container">
-                        <div className="table-responsive">
-                            <table className="table table-bordered">
-                                <thead id = "rs-colheader">
-                                
-                                </thead>
-                                <tbody id = "rs-datarow">
 
-                                </tbody>
-                            </table>
-                        </div>
+
                     </div>
 
+                    
+                    <div className="content col-lg-9">
+                                               
+                        <div className="top-section">                
+                            <img src={require('../src/img/logo.png')} />   
+                        </div>               
+
+                        <div className="input-section">                            
+                            <form action = "" onSubmit = { (e) => {this.executeQuery(e)} }>                            
+                                <p>Enter the SQL to execute below:</p>                                                               
+                                <textarea className="form-control" rows="5" id="fileDisplayArea" ref = {(sql_string) => this.sql_string = sql_string}>
+                                </textarea>                                    
+
+                                <button className="btn btn-success btn-md" id="exec-btn">Execute</button>                                    
+                                                                    
+                                <input type="button" className="btn btn-md btn-primary" id="importBtn" value="Import File" onClick={(e) => this.clickFile(e)} />                                         
+                                <input type="file" id="fileInput" ref="fileInput" accept=".csv" onChange={(e) => {this.executeImport(e.target.files)}}/>
+
+                                <div id="cover-spin"></div>  
+
+                                <div id="errorDisplayArea" className="alert alert-danger"></div>                                
+                            </form> 
+                        </div>
+                                    
+                        <div className="output-section">
+                            
+                            
+                            <div className="table-responsive">
+                                <table className="table table-bordered">
+                                    <thead id = "rs-colheader">
+                                    
+                                    </thead>
+                                    <tbody id = "rs-datarow">
+
+                                    </tbody>
+                                </table>
+                            </div>
+                           
+                        </div>                         
+
+                    
+                    </div>
+                    
                 </div>
-                <footer className="text-muted">
-                    <div className="container">        
-                        <p>&copy; CMSC227</p>        
-                    </div>
+                <footer>                         
+                    <p id="copy-text">Copyright &copy; 2018 CMSC227. All Rights Reserved</p>       
                 </footer>
             </div>
         );
