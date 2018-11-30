@@ -21,8 +21,9 @@ class Root extends React.Component {
         e.preventDefault();
         let coverSpin = document.getElementById('cover-spin');
         coverSpin.style.display = "block";
-        const sqlstring = this.sql_string.value;
+        const sqlstring = (this.sql_string.value).trim();
         const arr_sqlstring = sqlstring.split(';');
+
         if(arr_sqlstring.length > 1 && arr_sqlstring[arr_sqlstring.length - 1] !== "" ) {
             console.error('Current version can only execute one query at a time.');
             let coverSpin = document.getElementById('cover-spin');
@@ -38,27 +39,25 @@ class Root extends React.Component {
         }
     }
 
-    getJsonData(result) {
-        console.log('RESULT:');
-        console.log(result.data);
+    getJsonData(result) { 
         let jsonData = JSON.stringify(result.data);
-        console.log(jsonData);
-
         let col = ["studno","studentname","birthday","degree","major","unitsearned"];
     }
 
  
     executeImport(selectorFiles: FileList){        
         let file = selectorFiles[0]; 
-
+        let file_temp = file['name'];
+        let file_temp_arr = file_temp.split(".");
+        let filename =  file_temp_arr[0];
         const Papa = require('papaparse');
         Papa.parse(file, {
             header: true,
             dynamicTyping: true,       
             complete: function(result){
-                console.log(result.data);
+                
                 let values2 = (result.data);
-                let tblName = 'student';   //Should not be hardcoded
+                let tblName = filename;   //Should not be hardcoded
         
                 let cols = {};
                 let cmd = "insert";
@@ -97,7 +96,7 @@ class Root extends React.Component {
                
        
                 let url_qs = {cmd, tblName, vals : JSON.stringify(data_temp)};
-               
+              
                 $.post('http://localhost:1337/', url_qs, function(d) {
                     if(d == "1") {
                         console.log('INSERT: 1 row inserted.')
@@ -110,65 +109,6 @@ class Root extends React.Component {
         });
     }
     
-    createSqlQuery(tableName: string, columns: string[], obj: any) {
-        this.generatedSqlQuery = `INSERT INTO ${tableName} `
-        let columnList = "";
-        columnList = columnList + "("
-        for (let index = 0; index < columns.length; index++) {
-          if (index == columns.length - 1) {
-            columnList = columnList + columns[index];
-          } else {
-            columnList = columnList + columns[index] + ",";
-          }
-        }
-        this.generatedSqlQuery = this.generatedSqlQuery + columnList + ") VALUES ";
-    
-        for (let index = 0; index < obj.length; index++) {
-          let item = obj[index];
-    
-          if (index == columns.length - 1) {
-            this.generatedSqlQuery = this.generatedSqlQuery + "(";
-            for (var key in obj[index]) {
-              if (obj[index].hasOwnProperty(key)) {
-                var val = obj[index][key];
-                this.generatedSqlQuery = this.generatedSqlQuery + val + ",";
-              }
-            }
-            this.generatedSqlQuery = this.generatedSqlQuery.slice(0, -1);
-            this.generatedSqlQuery = this.generatedSqlQuery + ")";
-            if (index == columns.length - 1) {
-              this.generatedSqlQuery = this.generatedSqlQuery + ",";
-            }
-            if (obj.length == 1) {
-              this.generatedSqlQuery = this.generatedSqlQuery.slice(0, -1);
-            }
-          } else {
-            this.generatedSqlQuery = this.generatedSqlQuery + "(";
-            let length = 0;
-            for (var key in obj[index]) {
-              length++;
-            }
-            for (var key in obj[index]) {
-              if (obj[index].hasOwnProperty(key)) {
-                var val = obj[index][key];
-                this.generatedSqlQuery = this.generatedSqlQuery + val + ",";
-              }
-            }
-            this.generatedSqlQuery = this.generatedSqlQuery.slice(0, -1);
-            this.generatedSqlQuery = this.generatedSqlQuery + "),";
-            if (obj.length == 1) {
-              this.generatedSqlQuery = this.generatedSqlQuery.slice(0, -1);
-            }
-            
-          }
-        }
-        if (obj.length > 1) {
-          this.generatedSqlQuery = this.generatedSqlQuery.slice(0, -1);
-        }
-        
-        // return this.generatedSqlQuery;
-        this.getGeneratedSql(this.generatedSqlQuery);
-      }
 
     //returns token
     parseQuery(sqlstring, callback) {
