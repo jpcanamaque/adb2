@@ -480,58 +480,116 @@ class Root extends React.Component {
         return (
             
             <div >
-                <div className="row">
+                <div className="row full-content">
 
                     <div className="sidebar">                                
                          
-
-                        <div class="panel-group" id="accordion">
-                              <div class="panel panel-default">
-                                <div class="panel-heading">
-                                  <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
-                                    Collapsible Group 1</a>
-                                  </h4>
+                        <h5 className="d-flex justify-content-between" id="">
+                            <span className="text-muted">Schema</span>
+                            <span className="badge badge-secondary badge-pill">5</span>
+                        </h5>
+                        <ul className="list-group">
+                            <li className="list-group-item">
+                                <h6 className="my-0">STUDENT</h6>
+                                <div className="row"> 
+                                    <div className="col-lg-7">                                    
+                                        <small className="text-muted">StudNo</small>
+                                        <small className="text-muted">StudentName</small>
+                                        <small className="text-muted">Birthday</small>
+                                        <small className="text-muted">Degree</small>
+                                        <small className="text-muted">Major</small>
+                                        <small className="text-muted">UnitsEarned</small>                                                                   
+                                    </div>
+                                    <div className="col-lg-5">
+                                        <small className="text-muted">string</small>                         
+                                        <small className="text-muted">string (50)</small> 
+                                        <small className="text-muted">string</small>
+                                        <small className="text-muted">string (50)</small>
+                                        <small className="text-muted">string (50)</small>
+                                        <small className="text-muted">integer</small>
+                                    </div>
                                 </div>
-                                <div id="collapse1" class="panel-collapse collapse in">
-                                  <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                                  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-                                  minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                                  commodo consequat.</div>
-                                </div>
-                              </div>
-                              <div class="panel panel-default">
-                                <div class="panel-heading">
-                                  <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
-                                    Collapsible Group 2</a>
-                                  </h4>
-                                </div>
-                                <div id="collapse2" class="panel-collapse collapse">
-                                  <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                                  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-                                  minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                                  commodo consequat.</div>
-                                </div>
-                              </div>
-                              <div class="panel panel-default">
-                                <div class="panel-heading">
-                                  <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">
-                                    Collapsible Group 3</a>
-                                  </h4>
-                                </div>
-                                <div id="collapse3" class="panel-collapse collapse">
-                                  <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                                  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-                                  minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                                  commodo consequat.</div>
-                                </div>
-                              </div>
-                            </div>
-
-
-
+                                
+                            </li>
+                            <li className="list-group-item">
+                                <h6 className="my-0">STUDENTHISTORY</h6>
+                                <div className="row"> 
+                                    <div className="col-lg-7">                                    
+                                        <small className="text-muted">StudNo</small>
+                                        <small className="text-muted">Description</small>
+                                        <small className="text-muted">Action</small>
+                                        <small className="text-muted">DateFiled</small>
+                                        <small className="text-muted">DateResolved</small>                                                                   
+                                    </div>
+                                    <div className="col-lg-5">
+                                        <small className="text-muted">string</small>                         
+                                        <small className="text-muted">string (50)</small> 
+                                        <small className="text-muted">string (50</small>
+                                        <small className="text-muted">string?</small>
+                                        <small className="text-muted">string?</small>
+                                    </div>
+                                </div>                                
+                            </li>
+                            <li className="list-group-item">
+                                <h6 className="my-0">COURSE</h6>
+                                <div className="row"> 
+                                    <div className="col-lg-7">                                    
+                                        <small className="text-muted">CNo</small>
+                                        <small className="text-muted">CTitle</small>
+                                        <small className="text-muted">CDesc</small>
+                                        <small className="text-muted">NoOfUnits</small>
+                                        <small className="text-muted">HasLab</small>
+                                        <small className="text-muted">SemOffered</small>                                                                    
+                                    </div>
+                                    <div className="col-lg-5">
+                                        <small className="text-muted">string (50)</small>                         
+                                        <small className="text-muted">string (50)</small> 
+                                        <small className="text-muted">string (50)</small>
+                                        <small className="text-muted">integer</small>
+                                        <small className="text-muted">enum</small>
+                                        <small className="text-muted">enum</small>
+                                    </div>
+                                </div>                                
+                            </li>
+                            <li className="list-group-item">
+                                <h6 className="my-0">COURSEOFFERING</h6>
+                                <div className="row"> 
+                                    <div className="col-lg-7">                                    
+                                        <small className="text-muted">Semester</small>
+                                        <small className="text-muted">AcadYear</small>
+                                        <small className="text-muted">CNo</small>
+                                        <small className="text-muted">Section</small>
+                                        <small className="text-muted">Time</small>
+                                        <small className="text-muted">MaxStud</small>                                                                    
+                                    </div>
+                                    <div className="col-lg-5">
+                                        <small className="text-muted">enum</small>                         
+                                        <small className="text-muted">string (50)</small> 
+                                        <small className="text-muted">string (50)</small>
+                                        <small className="text-muted">string (50)</small>
+                                        <small className="text-muted">date</small>
+                                        <small className="text-muted">integer</small>
+                                    </div>
+                                </div>                                
+                            </li>
+                            <li className="list-group-item">
+                                <h6 className="my-0">STUDCOURSE</h6>
+                                <div className="row"> 
+                                    <div className="col-lg-7">                                    
+                                        <small className="text-muted">StudNo</small>
+                                        <small className="text-muted">CNo</small>
+                                        <small className="text-muted">Semester</small>
+                                        <small className="text-muted">AcadYear</small>                                                                   
+                                    </div>
+                                    <div className="col-lg-5">
+                                        <small className="text-muted">string</small>                         
+                                        <small className="text-muted">string (50)</small> 
+                                        <small className="text-muted">enum</small>
+                                        <small className="text-muted">string (50)</small>
+                                    </div>
+                                </div>                                
+                            </li>                            
+                          </ul>
 
                     </div>
 
@@ -539,7 +597,7 @@ class Root extends React.Component {
                     <div className="content col-lg-9">
                                                
                         <div className="top-section">                
-                            <img src={require('../src/img/logo.png')} />   
+                            <img src={require('../src/img/logo.png')} width="300"/>   
                         </div>               
 
                         <div className="input-section">                            
