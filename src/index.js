@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import parser from 'sqlite-parser';
-// import $ from 'jquery';
+import $ from 'jquery';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
