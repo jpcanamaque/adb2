@@ -22,22 +22,22 @@ class Root extends React.Component {
 
     executeQuery(e) {
         e.preventDefault();
-        let coverSpin = document.getElementById('cover-spin');
-        coverSpin.style.display = "block";
+        // let coverSpin = document.getElementById('cover-spin');
+        // coverSpin.style.display = "block";
         const sqlstring = (this.sql_string.value).trim();
         const arr_sqlstring = sqlstring.split(';');
 
         if(arr_sqlstring.length > 1 && arr_sqlstring[arr_sqlstring.length - 1] !== "" ) {
             console.error('Current version can only execute one query at a time.');
-            let coverSpin = document.getElementById('cover-spin');
-            coverSpin.style.display = "none";
-        } else {
+            // let coverSpin = document.getElementById('cover-spin');
+            // coverSpin.style.display = "none";
+        }else {
             this.parseQuery(sqlstring, (sql_token) => {
                 if(typeof sql_token === 'object' || sql_token == 1) {
                     this.validateQuery(sql_token);
                 }
-                let coverSpin = document.getElementById('cover-spin');
-                coverSpin.style.display = "none";
+                // let coverSpin = document.getElementById('cover-spin');
+                // coverSpin.style.display = "none";
             });
         }
     }
@@ -91,7 +91,7 @@ class Root extends React.Component {
                             } else {
                                 console.error("INSERT error: " + validateCols);
                             }
-                        }
+                        } 
                     });
 
                     data_temp[i] = cols ;
@@ -106,8 +106,8 @@ class Root extends React.Component {
                     }
                 });
         
-                let coverSpin = document.getElementById('cover-spin');
-                coverSpin.style.display = "none";
+                // let coverSpin = document.getElementById('cover-spin');
+                // coverSpin.style.display = "none";
             }
         });
     }
@@ -350,8 +350,8 @@ class Root extends React.Component {
             thead_content += "</tr>";
             $("#rs-colheader").html(thead_content);
             $("#rs-datarow").html(tbody_content);
-            let coverSpin = document.getElementById('cover-spin');
-            coverSpin.style.display = "none";
+            // let coverSpin = document.getElementById('cover-spin');
+            // coverSpin.style.display = "none";
         });
     }
 
@@ -435,8 +435,8 @@ class Root extends React.Component {
             }
         });
 
-        let coverSpin = document.getElementById('cover-spin');
-        coverSpin.style.display = "none";
+        // let coverSpin = document.getElementById('cover-spin');
+        // coverSpin.style.display = "none";
     }
 
     deleteData (tblName, whereClause) {
@@ -466,8 +466,8 @@ class Root extends React.Component {
                 }
             });
 
-            let coverSpin = document.getElementById('cover-spin');
-            coverSpin.style.display = "none";
+            // let coverSpin = document.getElementById('cover-spin');
+            // coverSpin.style.display = "none";
         });
     }
 
