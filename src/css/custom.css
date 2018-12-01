@@ -4,7 +4,7 @@ body{
     height: 100%;
 }
 
-.row.full-content{
+.row{
     width:100%;
 }
 
@@ -14,14 +14,21 @@ body{
     background-color: #f7f7f7;
     border-right: 1px solid #eee;
     width: 350px;
+    padding-left: 30px;
+    padding-right: 30px;
+
     position: fixed;
     z-index: 1;
     top: 0;
     left: 0;
     bottom:60px;
     overflow-x: hidden;
-    padding-left: 30px;
-    padding-right: 30px;
+    
+
+}
+
+.list-group{
+    padding-bottom: 20px; 
 }
 
 .list-group-item h6{
@@ -33,26 +40,34 @@ body{
 }
 
 .content{
-    height: 100vh;
-    margin-left: 380px;    
+    
+/*    width: 100%;*/
+    margin-left: 350px;
 
+
+
+
+}
+
+.top-section, .input-section, .output-section{
+    padding-left: 20px;
+    padding-right: 10px;
 }
 
 .top-section, .sidebar{
     padding-top: 30px;
-    padding-bottom: 30px;
-    
+    padding-bottom: 20px;    
 }
 
 /*input-section*/
 .input-section{
-    padding-top: 15px;
-    padding-bottom: 30px;
+    padding-top: 10px;
+    padding-bottom: 0.1px;
 }
 
 .input-section textarea{ 
     margin-top: -0.8em;
-    margin-bottom: 1em;
+    margin-bottom: 0.7em;
 }
 
 #importBtn{
@@ -76,37 +91,37 @@ body{
 }
 
 #fileDisplayArea{
-     width: 100%;
+    width: 100%;
 }
 
 #errorDisplayArea{
-  margin-top: 0.8em;
-  width: 100%;
-  overflow-x: auto;
-  display:none;
+    margin-top: 1.5em;
+    margin-bottom: 0.8em;
+    width: 100%;
+    /*display:none;*/
 }
 
 /*result-section*/
-.result-section{
+.output-section{
     padding-top: 20px;
-    padding-bottom: 30px;
+    margin-bottom: 160px;
 }
 
-#result-txt{
+.table-responsive{
+    max-height: 500px;
+}
+
+/*#output-txt{
     overflow-y: scroll;
-    /*height: 100px;*/
+    height: 100px;
     resize: none; 
-}
+}*/
 
-.table-responsive {
-    max-height:300px;
-}
+
 
 
 /*footer*/
 footer {
-    padding-top: 1.3rem;
-    
     position:fixed;
     bottom:0;
     width: 100%;
@@ -115,7 +130,8 @@ footer {
 }
 
 footer #copy-text{
-    margin-left: 2em;
+    padding-left: 2em;
+    padding-top: 1.3rem;
     color: #f7f3f3 !important;
     font-size: 14px;
 }

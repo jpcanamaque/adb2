@@ -597,13 +597,13 @@ class Root extends React.Component {
                     <div className="content col-lg-9">
                                                
                         <div className="top-section">                
-                            <img src={require('../src/img/logo.png')} width="300"/>   
+                            <img src={require('../src/img/logo.png')} width="250"/>   
                         </div>               
 
                         <div className="input-section">                            
                             <form action = "" onSubmit = { (e) => {this.executeQuery(e)} }>                            
                                 <p>Enter the SQL to execute below:</p>                                                               
-                                <textarea className="form-control" rows="5" id="fileDisplayArea" ref = {(sql_string) => this.sql_string = sql_string}>
+                                <textarea className="form-control" rows="3" id="fileDisplayArea" ref = {(sql_string) => this.sql_string = sql_string}>
                                 </textarea>                                    
 
                                 <button className="btn btn-success btn-md" id="exec-btn">Execute</button>                                    
@@ -616,6 +616,8 @@ class Root extends React.Component {
                                 <div id="errorDisplayArea" className="alert alert-danger"></div>                                
                             </form> 
                         </div>
+
+                        <hr/>
                                     
                         <div className="output-section">
                             
@@ -641,6 +643,7 @@ class Root extends React.Component {
                     <p id="copy-text">Copyright &copy; 2018 CMSC227. All Rights Reserved</p>       
                 </footer>
             </div>
+            
         );
     }
 
