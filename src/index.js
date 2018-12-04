@@ -20,6 +20,8 @@ class Root extends React.Component {
         this.selectData = this.selectData.bind(this);
     }
 
+
+
     executeQuery(e) {
         e.preventDefault();
         // let coverSpin = document.getElementById('cover-spin');
@@ -342,6 +344,7 @@ class Root extends React.Component {
             
 
             data.forEach(function(d,i) {
+                
                 cols.forEach(function(e,f) {
                     tbody_content += "<td>" + d[e.toLowerCase()] + "</td>";
                 });
@@ -525,8 +528,8 @@ class Root extends React.Component {
                                         <small className="text-muted">string</small>                         
                                         <small className="text-muted">string (50)</small> 
                                         <small className="text-muted">string (50</small>
-                                        <small className="text-muted">string?</small>
-                                        <small className="text-muted">string?</small>
+                                        <small className="text-muted">string</small>
+                                        <small className="text-muted">string</small>
                                     </div>
                                 </div>                                
                             </li>
