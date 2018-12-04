@@ -137,6 +137,24 @@ footer #copy-text{
 }
 
 
+.output-section .table{
+    border-top-color:  #716f6f;
+}
+
+.output-section #rs-colheader{
+    overflow-y: auto;
+    height: 100px;
+}
+
+.output-section #rs-colheader th{
+    position: sticky;
+    top: 0;
+    background-color: #716f6f;
+    color: white;    
+    border-top: 2px;
+}
+
+
 /*page loader*/
 #cover-spin {
     position:fixed;
