@@ -24,7 +24,7 @@ class Root extends React.Component {
         e.preventDefault();
         // let coverSpin = document.getElementById('cover-spin');
         // coverSpin.style.display = "block";
-        const sqlstring = (this.sql_string.value).trim();
+        const sqlstring = (this.sql_string.value);
         const arr_sqlstring = sqlstring.split(';');
 
         if(arr_sqlstring.length > 1 && arr_sqlstring[arr_sqlstring.length - 1] !== "" ) {
